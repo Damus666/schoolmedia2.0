@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Post{% endblock title %}
+
+{% block content %}
+
+<div class="ui segment">
+    {% if messages %}
+        {% for message in messages %}
+            {% if 'warning' in message.tags %}
+                <div class="ui red message">
+                    <div class="header">
+                        {{message}}
+                    </div>
+                </div>
+            {%endif%}
+        {%endfor%}
+    {%endif%}
+    <h2>Edit Post</h2>
+
+    <form action="" method="POST" class="ui form" enctype="multipart/form-data">
+        {%csrf_token%}
+        {{form.as_p}}
+        <button type="submit" class="ui button right labeled icon green mt-5">
+            Save Changes
+            <i class="cloud upload icon"></i>
+        </button>
+        <a class="ui button basic left labeled icon green mt-5" href="{%url 'posts:main-post-view'%}">
+            Back
+            <i class="arrow left icon"></i>
+        </a>
+    </form>
+    
+</div>
+
+{% endblock content %}

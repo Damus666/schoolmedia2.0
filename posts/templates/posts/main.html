@@ -1,0 +1,283 @@
+{% extends 'base.html' %}
+
+{% block title %}Feed{% endblock title %}
+
+{% block content %}
+<!--MODAL-->
+<div class="ui modal mymodal">
+  <i class="close icon"></i>
+  <div class="header">
+    <i class="pencil alternate icon"></i> Create a Post:
+  </div>
+    <div class="description">
+      <div class="ui segment">
+            <div class="content">
+              {% if post_added %}
+                <div class="ui green message">Post published succesfully</div>
+              {%endif%}
+            <form action="" method="POST" class="ui form" enctype="multipart/form-data">
+              {%csrf_token%}
+              {{p_form.as_p}}
+            </div>
+            </div>
+    </div>
+  <div class="actions">
+    <button class="ui positive right labeled icon button" type="submit" name="submit_p_form">
+      Publish 
+      <i class="chevron circle right icon"></i>
+    </button>
+  </form>
+  </div>
+</div>
+<!--end modal-->
+<div class="ui grid">
+    <div class="colonna_sinistra eleven wide column" id="colonna_sinistra">
+      {% if messages %}
+        {% for message in messages %}
+            {% if 'success' in message.tags %}
+                <div class="ui green message">
+                        {{message}}
+                     </div>
+            {%endif%}
+        {%endfor%}
+    {%endif%}
+      <h1 class="mt-8"><i class="book icon"></i> Recent Posts:</h1>
+      <button class="ui green button modalbutton display-none" id="modal-btn" style="width:100% !important;"><i class="pencil alternate icon"></i> Create Post</button>
+        {% for obj in qs %}
+
+        <div class="ui fluid card">
+            <div class="content">
+                <div class="right floated meta">
+                <div class="ui grid">
+                    <div class="row">
+                        {% if request.user == obj.author.user %}
+                            <a href="{% url 'posts:post-update' obj.pk %}"><button class="ui button bwhite-lg-d" style="padding-right:2px !important;color:black !important;"><i class="edit icon"></i>Edit</button></a>
+                            <a href="{% url 'posts:post-delete' obj.pk %}"><button class="ui button bwhite-lg-d" style="color:red;"><i class="window close icon"></i>Delete</button></a>
+                        {% endif %}
+                    </div>
+                </div>
+                    
+                </div>
+                <img class="ui avatar image" src={{obj.author.avatar.url}}> 
+                <a style="color:black;text-decoration: none;" href={{obj.author.get_absolute_url}}><b>
+                  {% if obj.author.first_name and obj.author.last_name %}
+                  {{ obj.author.first_name }} {{ obj.author.last_name }}
+                  {% elif obj.author.first_name and not obj.author.last_name %}
+                  {{ obj.author.first_name }}
+                  {% elif not obj.author.first_name and obj.author.last_name %}
+                  {%else%}
+                  {{obj.author.user}}
+                  {%endif%}
+                </b></a> | {{ obj.created|timesince}} ago
+            </div>
+            <div class="ui fluid rounded image">
+                {% if obj.image %}
+                    <img src={{obj.image.url}}>
+                {% endif %}
+            </div>
+            <div class="content">
+              {%if obj.title%}
+              <p class="mb-5" style="font-size: 30px !important;"> {{obj.title}}</p>
+              {%endif%}
+                <p class="mb-7" style="font-size: 18px !important;"> {{ obj.content }} </p>
+                <div class="bottoni mt-8 display-flex">
+
+                    <form action="{% url 'posts:like-post-view' %}" method="POST" class="like-form" id="{{obj.id}}">
+                        {%csrf_token%}
+                        <input type="hidden" name="post_id" value={{obj.id}}>
+                        {% if obj.author.user != request.user %}
+                        <div class="ui labeled button mt-5" tabindex="0" style="margin-right:5px;">
+                            <button class="ui red button like-button like-btn{{obj.id}}" type="submit">
+                              {%if profile not in obj.liked.all%}
+                              Like
+                              {%else%}
+                              Unlike
+                              {%endif%}
+                            </button>
+                            <div class="ui basic red left pointing label like-button no-hover-custom like-count{{obj.id}}">
+                              {{obj.num_likes}}&nbsp; <i class="heart icon" style="margin-right:0 !important;"></i>
+                            </div>
+                          </div>
+                        {%else%}
+                        <div class="ui labeled button mt-5" tabindex="0">
+                            <div class="ui red button like-button no-hover-custom">
+                              <i class="heart icon"></i>
+                            </div>
+                            <div class="ui basic red left pointing label like-button no-hover-custom">
+                              {{obj.num_likes}}
+                            </div>
+                          </div>
+                        {%endif%}
+                    </form>
+                
+                <div class="ui labeled button mt-5" tabindex="0">
+                  <button class="cmt_btn ui button primary like-button" id="toggle-button" onclick="toggle_comments('{{obj.id}}idid')">
+                    <i class="comment icon"></i> Comments
+                  </button>
+                  <div class="ui basic blue left pointing label no-hover-custom like-button">
+                    {{obj.num_comments}}
+                  </div>
+                </div>
+
+                <button class="ui button basic black like-button mt-5" onclick="toggle_write('{{obj.id}}id')"><i class="pencil alternate icon"></i> Write..</button>
+
+              </div>
+            </div>
+            <div class="extra content">
+                <div class="mb-5">
+                  
+                </div>
+
+                <form action="" method="POST" class="ui fluid form mt-5 comment-box-d mb-7" id="{{obj.id}}id">
+                  {%csrf_token%}
+                  <input type="hidden" name="post_id" value={{obj.id}}>
+                  {{c_form.as_p}}
+                  <button class="ui positive right labeled icon button like-button" type="submit" name="submit_c_form">
+                    Send
+                    <i class="location arrow icon"></i>
+                  </button>
+                </form>
+                
+                <div class="comment-box-d" id="{{obj.id}}idid">
+                {% if obj.comment_set.all %}
+                    {% for c in obj.comment_set.all %}
+                    
+                        <div class="ui segment mb-5">
+                            <img class="ui avatar image" src={{c.user.avatar.url}}>
+                            <span><a style="color:gray;text-decoration: none;" href={{c.user.get_absolute_url}}><b>
+                              {% if c.user.first_name and c.user.last_name %}
+                  {{ c.user.first_name }} {{ c.user.last_name }}
+                  {% elif c.user.first_name and not c.user.last_name %}
+                  {{ c.user.first_name }}
+                  {% elif not c.user.first_name and c.user.last_name %}
+                  {%else%}
+                  {{c.user.user}}
+                  {%endif%}
+                            </b></a> | {{ c.created|timesince}} ago</span>
+                            <div class='mt-5'>{{ c.body }}</div>
+                        </div>
+                    
+                    {% endfor %}
+                {% endif %}
+                </div>
+  
+            </div>
+        </div>
+
+
+        {% endfor %}
+    </div>
+    <div class="colonna_destra five wide column" id="colonna_destra">
+        <h2 class="mt-8"><i class="pencil alternate icon"></i> Create a Post:</h2>
+          <div class="ui fluid card">
+            <div class="content">
+              {% if post_added %}
+                <div class="ui green message">Post published succesfully</div>
+              {%endif%}
+            <form action="" method="POST" class="ui form" enctype="multipart/form-data">
+              {%csrf_token%}
+              {{p_form.as_p}}
+              <button class="ui positive right labeled icon button" type="submit" name="submit_p_form">
+                Publish 
+                <i class="chevron circle right icon"></i>
+              </button>
+            </form>
+            </div>
+            </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %} 
+    <script>
+      function toggle_comments(idd){
+        const btn = document.getElementById(idd)
+        if ( btn.classList.contains("comment-box-d")){
+          btn.classList.remove("comment-box-d")
+        } else {
+          btn.classList.add("comment-box-d")
+        }
+      }
+      function toggle_write(idid) {
+        const thing = document.getElementById(idid)
+        if ( thing.classList.contains("comment-box-d")){
+          thing.classList.remove("comment-box-d")
+        } else {
+          thing.classList.add("comment-box-d")
+        }
+      }
+      $(document).ready(function() {
+        $('.like-form').submit(function(e) {
+          e.preventDefault();
+
+          const post_id = $(this).attr('id');
+
+          const like_text = $(`.like-btn${post_id}`).text();
+          const trim = $.trim(like_text);
+
+          const url = $(this).attr('action');
+
+          let res;
+          const likes = $(`.like-count${post_id}`).text();
+          const trimCount = parseInt(likes);
+
+          $.ajax({
+            type: 'POST',
+            url: url,
+            data: {
+              'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+              'post_id':post_id,
+            },
+            success: function(response) {
+              if(trim === 'Unlike') {
+                $(`.like-btn${post_id}`).text('Like');
+                res = trimCount - 1;
+              } else {
+                $(`.like-btn${post_id}`).text('Unlike');
+                res = trimCount + 1;
+              };
+              $(`.like-count${post_id}`).text(res);
+              $(`.like-count${post_id}`).append('&nbsp; <i class="heart icon" style="margin-right:0 !important;"></i>');
+            },
+            error: function(response) {
+              console.log('An error occurred')
+            },
+          });
+        });
+        
+      });
+      jQuery(document).ready(function($) {
+        var changeClass = function() {
+          var w = document.body.clientWidth;
+          if (w < 983) {
+            $('.colonna_destra').addClass('display-none');
+            $('.colonna_sinistra').removeClass('eleven');
+            $('.colonna_sinistra').removeClass('wide');
+            $('.colonna_sinistra').removeClass('column');
+            $('.colonna_sinistra').addClass('sixteen');
+            $('.colonna_sinistra').addClass('wide');
+            $('.colonna_sinistra').addClass('column');
+            $('.modalbutton').removeClass('display-none');
+          } else if (w >= 984) {
+            $('.colonna_destra').removeClass('display-none');
+            $('.colonna_sinistra').removeClass('sixteen');
+            $('.colonna_sinistra').removeClass('wide');
+            $('.colonna_sinistra').removeClass('column');
+            $('.colonna_sinistra').addClass('eleven');
+            $('.colonna_sinistra').addClass('wide');
+            $('.colonna_sinistra').addClass('column');
+            $('.modalbutton').addClass('display-none');
+          };
+          if (w <400) {
+            $('.bottoni').removeClass('display-flex');
+          } else if (w >= 401) {
+            $('.bottoni').addClass('display-flex');
+          };
+        };
+        $(window).resize(function() {
+          changeClass();
+        });
+        changeClass();
+      });
+    </script>
+{% endblock scripts %}

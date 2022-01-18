@@ -1,0 +1,85 @@
+body {
+    background-color: #F8F8F8 !important;
+}
+
+.nav {
+    border-radius: 0 !important;
+    padding: 10px 0 10px 0 !important;
+    background-color: #396 !important;
+}
+
+.mb-7 {
+    margin-bottom: 7px !important;
+}
+
+.mt-5 {
+    margin-top: 5px !important;
+}
+
+.mt-8 {
+    margin-top: 8px !important;
+}
+.mymodal {
+    height:300px !important;
+    top:200px !important;
+    font-size: 20px !important;
+}
+
+.muted-custom {
+    color:gray;
+}
+
+.like-button {
+    padding:6px 12px 6px 12px !important;
+}
+
+.no-hover-custom:hover {
+    cursor:default !important;
+}
+
+.mb-5 {
+    margin-bottom:5px !important;
+}
+
+.bwhite-lg-d {
+    background-color: transparent !important;
+}
+
+.comment-box-d {
+    display:none !important;
+}
+
+.font-18{
+    font-size:18px !important;
+}
+
+.font-20{
+    font-size: 20px !important;
+}
+
+.message-custom{
+    margin-top:0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 7px !important;
+    padding-right:7px !important;
+    padding-left:7px !important;
+    font-size:14px !important;
+}
+
+.w-c{
+    width:180px !important;
+}
+
+.w-s{
+    width:150px !important;
+}
+
+.display-none{
+    display:none !important;
+}
+
+.display-flex{
+    display:flex !important;
+}
+
+

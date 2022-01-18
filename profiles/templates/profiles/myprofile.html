@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile{% endblock title %}
+
+{% block content %}
+
+<!--MODAL-->
+<div class="ui modal mymodal">
+    <i class="close icon"></i>
+    <div class="header">
+      Edit your profile
+    </div>
+    <div class="image content">
+      <div class="ui medium image">
+        <img src="{{profile.avatar.url}}">
+      </div>
+      <div class="description">
+        <div class="ui header">Provide some additional/newest info about you</div>
+        
+        <form action="" method="POST" class="ui form" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            {{form.as_p}}
+
+      </div>
+    </div>
+    <div class="actions">
+      <button class="ui positive right labeled icon button" type="submit">
+        Save Changes
+        <i class="cloud upload icon"></i>
+      </button>
+    </form>
+    </div>
+</div>
+<!--end modal-->
+
+<!--PROFILE-->
+<div class="ui segment">
+    {% if confirm %}
+    <div class="ui green message">Your profile has been updated</div>
+    {% endif %}
+    <!--profile infos-->
+    <div style="text-align: center;width:100%" class="mb-7">
+    <h2>My Profile: {{request.user}}</h2></div>
+    <div class="grida ui grid">
+        <div class="riga row">
+            <div class="colonna_sinistra six wide column">
+                <div class="ui centered grid mb-5 mt-8">
+                <img src={{profile.avatar.url}} alt="" class="ui medium rounded image">
+                <div class="row mt-8 display-flex">
+                    <button class="ui green button mt-5" id="modal-btn" style="margin-right:7px !important"><i class="edit icon"></i> Edit Profile</button>
+                    <a class="ui blue basic button mt-5" href={{profile.get_absolute_url}}><i class="linkify icon"></i> Profile Link</a>
+                </div>
+                </div>
+            </div>
+            <div class="colonna_destra ten wide column">
+                <table class="ui table mt-5">
+                    <tbody>
+                        <tr>
+                            <td>Username:</td>
+                            <td>{{profile.user}}</td>
+                        </tr>
+                        <tr>
+                            <td>Name:</td>
+                            {% if profile.first_name or profile.last_name %}
+                            <td>{{profile.first_name}} {{profile.last_name}}</td>
+                            {% else %}
+                            <td class="muted-custom">No name selected</td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td>Bio:</td>
+                            {% if profile.bio != "No bio yet..." %}
+                            <td>{{profile.bio}}</td>
+                            {% else %}
+                            <td class="muted-custom">{{profile.bio}}</td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td>Slug:</td>
+                            <td>{{profile.slug}}</td>
+                        </tr>
+                        <tr>
+                            <td>Friends:</td>
+                            {% if profile.friends.all.count > 0 %}
+                            <td>{{profile.get_friends_no}}</td>
+                            {% else %}
+                            <td class="muted-custom">No friends yet</td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td>Posts:</td>
+                            {% if profile.get_posts_no > 0 %}
+                            <td>{{profile.get_posts_no}}</td>
+                            {% else %}
+                            <td class="muted-custom">No posts yet</td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td>Likes:</td>
+                            {% if profile.get_likes_received_no > 0 %}
+                            <td>{{profile.get_likes_received_no}}</td>
+                            {% else %}
+                            <td class="muted-custom">No likes received</td>
+                            {% endif %}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end profile-->
+
+
+
+{% endblock content %}
+
+{% block scripts %} 
+    <script>
+      jQuery(document).ready(function($) {
+        var changeClass = function() {
+          var w = document.body.clientWidth;
+          if (w < 770) {
+            $('.colonna_sinistra').removeClass('six');
+            $('.colonna_sinistra').removeClass('wide');
+            $('.colonna_sinistra').removeClass('column');
+            $('.colonna_destra').removeClass('ten');
+            $('.colonna_destra').removeClass('wide');
+            $('.colonna_destra').removeClass('column');
+            $('.riga').removeClass('row');
+            $('.grida').removeClass('ui');
+            $('.grida').removeClass('grid');
+          } else if (w >= 771) {
+            $('.colonna_sinistra').addClass('six');
+            $('.colonna_sinistra').addClass('wide');
+            $('.colonna_sinistra').addClass('column');
+            $('.colonna_destra').addClass('ten');
+            $('.colonna_destra').addClass('wide');
+            $('.colonna_destra').addClass('column');
+            $('.riga').addClass('row');
+            $('.grida').addClass('ui');
+            $('.grida').addClass('grid');
+          };
+          if (w <400) {
+            $('.bottoni').removeClass('display-flex');
+          } else if (w >= 401) {
+            $('.bottoni').addClass('display-flex');
+          };
+        };
+        $(window).resize(function() {
+          changeClass();
+        });
+        changeClass();
+      });
+    </script>
+{% endblock scripts %}

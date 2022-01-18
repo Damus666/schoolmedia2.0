@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Post{% endblock title %}
+
+{% block content %}
+
+    {% if messages %}
+        {% for message in messages %}
+            {% if 'warning' in message.tags %}
+                <div class="ui red message">
+                    <div class="header">
+                        {{message}}
+                    </div>
+                </div>
+            {%endif%}
+        {%endfor%}
+
+    {%else%}
+        <div class="ui segment">
+            <h1>Delete Post</h1>
+            <h2 class="mb-5">Are you sure you want to delete the post?</h2>
+            <p style="font-size:20px !important;" class="mb-5">This action is irreversible</p>
+
+            <form action="" method="POST">
+                {%csrf_token%}
+                <button type="submit" class="ui button left labeled icon red mt-5">
+                Delete
+                <i class="window close icon"></i>
+                </button>
+                <a class="ui button left labeled icon green mt-5" href="{%url 'posts:main-post-view'%}">
+                    Cancel
+                    <i class="arrow left icon"></i>
+                </a>
+            </form>
+        </div>
+    {%endif%}
+
+{%endblock content%}

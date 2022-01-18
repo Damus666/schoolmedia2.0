@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}My Requests{% endblock title %}
+
+{% block content %}
+<h1 class="mt-8">Friend Requests:</h1>
+{%if not is_empty%}
+
+    {% for obj in qs %}
+    <div class="ui segment">
+        <div class="ui grid">
+            <div class="row">
+                <div class="three wide column">
+                    <img src={{obj.avatar.url}} alt="" class="ui small circular image">
+                </div>
+                <div class="thirteen wide column">
+                    <h2>
+                        {% if obj.first_name and obj.last_name %}
+                        {{ obj.first_name }} {{ obj.last_name }}
+                        {% elif obj.first_name and not obj.last_name %}
+                        {{ obj.first_name }}
+                        {% elif not obj.first_name and obj.last_name %}
+                        {%else%}
+                        {{obj.user}}
+                        {%endif%}
+                    </h2>
+                    {%if obj.bio != 'No bio yet...'%}
+                    <p class="mt-5 font-18">{{obj.bio}}</p>
+                    {%endif%}
+                    <div class="bottoni display-flex">
+                    <button type="submit" class="ui blue left labeled icon button w-s mt-5" style="margin-right:8px !important"><i class="eye icon"></i> See Profile</button>
+
+                    <form action="{%url 'profiles:accept-invite'%}" method="POST">
+                        {%csrf_token%}
+                        <input type="hidden" name="profile_pk" value={{obj.pk}}>
+                        
+                        <button type="submit" class="ui green right icon basic button w-c mt-5"><i class="check icon"></i>Accept Request</button>
+                        
+                    </form>
+
+                    <form action="{%url 'profiles:reject-invite'%}" method="POST">
+                        {%csrf_token%}
+                        <input type="hidden" name="profile_pk" value={{obj.pk}}>
+                        
+                        <button type="submit" class="ui red right icon basic button w-c mt-5"><i class="close icon"></i>Reject Request</button>
+                        
+                    </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {%endfor%}
+
+{%else%}
+<div class="ui yellow message header mt-5 mb-5">
+<h3>No friends request received</h3>
+</div>
+{%endif%}
+{%endblock content%}
+
+{% block scripts %} 
+    <script>
+      jQuery(document).ready(function($) {
+        var changeClass = function() {
+          var w = document.body.clientWidth;
+          if (w <580) {
+            $('.bottoni').removeClass('display-flex');
+          } else if (w >= 581) {
+            $('.bottoni').addClass('display-flex');
+          };
+        };
+        $(window).resize(function() {
+          changeClass();
+        });
+        changeClass();
+      });
+    </script>
+{% endblock scripts %}

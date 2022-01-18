@@ -1,0 +1,13 @@
+$(document).ready(function(){
+    $('#modal-btn').click(function(){
+        $('.ui.modal')
+        .modal('show')
+        ;
+    });
+    $('#modal-btn-d').click(function(){
+        $('.ui.modal')
+        .modal('show')
+        ;
+    });
+    $('.ui.dropdown').dropdown()
+});

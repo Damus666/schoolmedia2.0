@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock title %}
+
+{% block content %}
+<div class="ui segment">
+<div style="width:100%;text-align:center;">
+    <h1 style="font-size:60px !important"><i class="comments alternate icon"></i>&nbsp;School Media</h1>
+    <h1>Welcome to School Media!</h1>
+    <h3>A place to relax with your friends: create posts, see profiles and make relationships all around the world!</h3>
+    <p class="text font-18 mb-5"><i class="arrow down icon"></i>Start your journey on School Media now&nbsp;<i class="arrow down icon"></i></p>
+</div>
+<div class="ui centered grid mt-7" style="margin-top:10px !important;">
+    <div class="bottoni eight wide column display-flex">
+        <a class="ui blue fluid button mt-5"style="margin-right:7px !important;" href="{%url 'account_login'%}">
+            <i class="user circle icon"></i>&nbsp;Login
+        </a>
+        <a class="ui green fluid button mt-5"style="margin-right:7px !important;" href="{%url 'account_signup'%}">
+            <i class="user plus icon"></i>&nbsp;Sign Up
+        </a>
+    </div>
+</div>
+</div>
+{% endblock content %}
+
+{% block scripts %} 
+    <script>
+      jQuery(document).ready(function($) {
+        var changeClass = function() {
+          var w = document.body.clientWidth;
+          if (w <800) {
+            $('.bottoni').removeClass('display-flex');
+          } else if (w >= 801) {
+            $('.bottoni').addClass('display-flex');
+          };
+        };
+        $(window).resize(function() {
+          changeClass();
+        });
+        changeClass();
+      });
+    </script>
+{% endblock scripts %}

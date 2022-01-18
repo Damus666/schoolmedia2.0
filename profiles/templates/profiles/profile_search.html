@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}Search {% endblock title %}
+
+{% block content %}
+<h1 class="mt-8">Search Results:</h1>
+{%if not is_empty%}
+    {%for obj in qs%}
+        <div class="ui segment">
+            <div class="ui grid">
+                <div class="row">
+                    <div class="three wide column">
+                        <img src={{obj.avatar.url}} alt="" class="ui small circular image">
+                    </div>
+                    <div class="thirteen wide column">
+                        <h2>
+                            {% if obj.first_name and obj.last_name %}
+                            {{ obj.first_name }} {{ obj.last_name }}
+                            {% elif obj.first_name and not obj.last_name %}
+                            {{ obj.first_name }}
+                            {% elif not obj.first_name and obj.last_name %}
+                            {%else%}
+                            {{obj.user}}
+                            {%endif%}
+                        </h2>
+                        {%if obj.bio != 'No bio yet...'%}
+                        <p class="mt-5 font-18">{{obj.bio}}</p>
+                        {%endif%}
+                        <div class="bottoni display-flex">
+                        <a href={{obj.get_absolute_url}}><button type="submit" class="ui blue left labeled icon button w-s mt-5" style="margin-right:8px !important"><i class="eye icon"></i> See Profile</button></a>
+                        {%if obj.user != request.user%}
+                        {%if obj.user not in rel_receiver and obj.user not in rel_sender%}
+                        <form action="{%url 'profiles:send-invite'%}" method="POST">
+                            {%csrf_token%}
+                            <input type="hidden" name="profile_pk" value={{obj.pk}}>
+                            
+                            <button type="submit" class="ui green right icon basic button w-c mt-5"><i class="plus square icon"></i>Send friend request</button>
+                            
+                        </form>
+                        {%endif%}
+                        {%if obj.user in rel_receiver and request.user not in obj.friends.all%}
+                        <div class="ui info mini message message-custom w-c" style="
+                        margin-top:5px !important;
+                        margin-bottom: 0 !important;
+                        padding-top: 8px !important;
+                        padding-right:8px !important;
+                        padding-left:7px !important;
+                        font-size:14px !important;"><i class="info circle icon"></i>Waiting for approval</div>
+                        {%endif%}
+
+                        {%if request.user in obj.friends.all%}
+                        <form action="{%url 'profiles:remove-friend'%}" method="POST">
+                            {%csrf_token%}
+                            <input type="hidden" name="profile_pk" value={{obj.pk}}>
+                            
+                            <button type="submit" class="ui red right icon basic button w-c mt-5"><i class="minus square icon"></i>Remove from friends</button>
+                            
+                        </form>
+                        {%endif%}
+                        {%endif%}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {%endfor%}
+{%else%}
+<div class="ui yellow message header mt-5 mb-5">
+<h3>No profiles found</h3>
+</div>
+{%endif%}
+{%endblock content%}
+
+{% block scripts %} 
+    <script>
+      jQuery(document).ready(function($) {
+        var changeClass = function() {
+          var w = document.body.clientWidth;
+          if (w <480) {
+            $('.bottoni').removeClass('display-flex');
+          } else if (w >= 481) {
+            $('.bottoni').addClass('display-flex');
+          };
+        };
+        $(window).resize(function() {
+          changeClass();
+        });
+        changeClass();
+      });
+    </script>
+{% endblock scripts %}
